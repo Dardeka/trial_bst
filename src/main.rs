@@ -63,10 +63,14 @@ impl Node {
 
     fn successor(root: Option<Box<Node>>, key: i32){
         if let Some(node) = root{
-            // if node.key == key {
+            if node.key == key {
                 if node.right.is_some(){
                     Node::minimum(node.right);
+                    // println!("The successor of {} is {:?}", key, );
+                }else{
+                    println!("The successor of {} is {}", key, node.key);
                 }
+            }
         }
     }
 }
@@ -91,7 +95,7 @@ fn bst(arr: &mut [i32]){
     // Node::maximum(root);
 
     // Successor
-    Node::successor(root, 13);
+    Node::successor(root, 15);
 
 }
 
