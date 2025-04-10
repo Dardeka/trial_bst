@@ -6,7 +6,7 @@ struct Node{
 }
 
 impl Node {
-    
+
     // To insert new node into the tree by checking the current tree either have a root or not
     fn insert_node(root: Option<Box<Node>>, val: i32) -> Option<Box<Node>>{
         match root {
@@ -63,20 +63,10 @@ impl Node {
 
     fn successor(root: Option<Box<Node>>, key: i32){
         if let Some(node) = root{
-            if node.key == key {
+            // if node.key == key {
                 if node.right.is_some(){
-                    let root = node.right;
-                    if node.left.is_some(){
-                        // let succ = Node::minimum(root);
-                        // println!("The successor of {} is {:?}", key, succ);
-                        println!("The key is: {}", node.key);
-                    }else {
-                        
-                    }
+                    Node::minimum(node.right);
                 }
-            }else{
-
-            }
         }
     }
 }
@@ -101,7 +91,7 @@ fn bst(arr: &mut [i32]){
     // Node::maximum(root);
 
     // Successor
-    Node::successor(root, 15);
+    Node::successor(root, 13);
 
 }
 
