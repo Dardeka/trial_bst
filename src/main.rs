@@ -1,16 +1,59 @@
-fn bst(arr: &mut [i32]){
-    for x in arr{
-        insert_new_node(x);
+// #[derive(Debug)]
+struct Node{
+    key : i32,
+    left: Option<Box<Node>>,
+    right: Option<Box<Node>>,
+}
+
+impl Node {
+    // fn new_node(val: i32)-> Option<Box<Node>>{
+    //     Some(
+    //         Box::new(
+    //             Node { 
+    //                 key: val, 
+    //                 left: None, 
+    //                 right: None, 
+    //             }
+    //         )
+    //     )
+    // }
+
+    fn insert_node(root: Option<Box<Node>>, val: i32) -> Option<Box<Node>>{
+        match root {
+            Some(mut node) => {
+                if val > node.key{
+                    node.right = Node::insert_node(node.right.take(), val);
+                }else{
+                    node.left = Node::insert_node(node.left.take(), val);
+                }
+                Some(node)
+            }
+            None => {
+                Some(Box::new(
+                    Node { 
+                        key: val, 
+                        left: None, 
+                        right: None,
+                    }
+                ))
+            }
+        }
+    }
+
+    fn inorder(){
+        
     }
 }
 
-fn insert_new_node(val: &mut i32){
-    let mut root: Option<i32> = None;
-    check_root(root);
-}
+fn bst(arr: &mut [i32]){
+    let mut root: Option<Box<Node>> = None;
+    let mut index = 0;
+    while index < arr.len(){
+        root = Node::insert_node(root, arr[index]);
+        index += 1;
+    }
 
-fn check_root(root:Option<i32>) -> Option<i32> {
-    
+    println!("{:?}", root)
 }
 
 fn main() {
