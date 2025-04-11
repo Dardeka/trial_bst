@@ -41,13 +41,23 @@ impl Node {
     
     // To find the minimum value of the tree
     fn minimum(root: Option<Box<Node>>){
-        if let Some(node) = root{
-            if node.left.is_some(){
-                Self::minimum(node.left);
-            }else{
-                println!("The minimum Node is: {}", node.key);
+        match root {
+            Some(node) => {
+                if node.left.is_some(){
+                    Self::minimum(node.left);
+                }
+                else{ println!("The minimum is {}", node.key) }
             }
+
+            _=>{}
         }
+
+        // let Some(node) = root;
+        // while node.left.is_some(){
+        //     Self::minimum(node.left);
+        //     break;
+        // }
+        // node.key
     }
 
     // To find the maximum value of the tree
@@ -61,17 +71,28 @@ impl Node {
         }
     }
 
-    fn successor(root: Option<Box<Node>>, key: i32){
-        if let Some(node) = root{
-            if node.key == key {
-                if node.right.is_some(){
-                    Node::minimum(node.right);
-                    // println!("The successor of {} is {:?}", key, );
+    fn search(root: Option<Box<Node>>, goal:i32) -> i32{
+        match root {
+            Some(node) => {
+                if node.key == goal{
+                    node.key;
+                }
+                if goal < node.key{
+                    return Self::search(node.left, goal);
                 }else{
-                    println!("The successor of {} is {}", key, node.key);
+                    return Self::search(node.right, goal);
                 }
             }
+            None => {
+                return goal;
+            }
         }
+    }
+
+    fn successor(root: Option<Box<Node>>, key: i32){
+        let succ = 0;
+
+        
     }
 }
 
@@ -88,14 +109,19 @@ fn bst(arr: &mut [i32]){
     // Node::inorder(root);
     // print!("\n");
 
-    // // Minimum Tree
-    // Node::minimum(root);
+    // Minimum Tree
+    Node::minimum(root);
 
     // // Maximum Tree
     // Node::maximum(root);
 
-    // Successor
-    Node::successor(root, 15);
+    // // Node Searching
+    // let destination = 13;
+    // let searching = Node::search(root, destination);
+    // println!("The position of {destination} is {searching}");
+
+    // // Successor
+    // Node::successor(root, 15);
 
 }
 
