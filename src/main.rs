@@ -51,13 +51,6 @@ impl Node {
 
             _=>{}
         }
-
-        // let Some(node) = root;
-        // while node.left.is_some(){
-        //     Self::minimum(node.left);
-        //     break;
-        // }
-        // node.key
     }
 
     // To find the maximum value of the tree
@@ -71,28 +64,30 @@ impl Node {
         }
     }
 
-    fn search(root: Option<Box<Node>>, goal:i32) -> i32{
+    fn search(root: Option<&Box<Node>>, goal:i32) -> Option<&Box<Node>>{
         match root {
-            Some(node) => {
+            Some(ref node) => {
+                let left = node.left.as_ref();
+                let right = node.right.as_ref();
+
                 if node.key == goal{
-                    node.key;
+                    return root;
                 }
                 if goal < node.key{
-                    return Self::search(node.left, goal);
+                    return Self::search(left.clone(), goal);
                 }else{
-                    return Self::search(node.right, goal);
+                    return Self::search(right.clone(), goal);
                 }
             }
             None => {
-                return goal;
+                return None;
             }
         }
     }
 
     fn successor(root: Option<Box<Node>>, key: i32){
         let succ = 0;
-
-        
+                
     }
 }
 
@@ -109,16 +104,16 @@ fn bst(arr: &mut [i32]){
     // Node::inorder(root);
     // print!("\n");
 
-    // Minimum Tree
-    Node::minimum(root);
+    // // Minimum Tree
+    // Node::minimum(root);
 
     // // Maximum Tree
     // Node::maximum(root);
 
-    // // Node Searching
-    // let destination = 13;
-    // let searching = Node::search(root, destination);
-    // println!("The position of {destination} is {searching}");
+    // Node Searching
+    // let destination = 18;
+    // let searching = Node::search(root.as_ref(), destination);
+    // println!("The position of {destination} is \n{:#?}", searching );
 
     // // Successor
     // Node::successor(root, 15);
