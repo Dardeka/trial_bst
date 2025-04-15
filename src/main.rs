@@ -1,14 +1,14 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-type Link<T> = Option<Rc<RefCell<Node<T>>>>;
+type Link<Tree> = Option<Rc<RefCell<Node<Tree>>>>;
 
 #[derive(Debug)]
-struct Node<T: Ord>{
+struct Node<Tree>{
     key : i32,
-    left: Link<T> ,
-    right: Link<T>,
-    parent: Option<Weak<RefCell<Node<T>>>>
+    left: Link<Tree> ,
+    right: Link<Tree>,
+    parent: Option<Weak<RefCell<Node<Tree>>>>
 }
 
 impl<T:Ord> Node<T> {
@@ -21,11 +21,18 @@ impl<T:Ord> Node<T> {
                 let right = node.borrow().right.clone();
                 let left = node.borrow().left.clone();
                 if val > key{
-                    node.borrow_mut().right = Node::insert_node(right, val);
-                    node.borrow_mut().parent = node.borrow();
+                    let new_right = Node::insert_node(right, val);
+                    if let Some(ref child) = new_right{
+                        child.borrow_mut().parent = Some(Rc::downgrade(&node));
+                    }
+                    node.borrow_mut().right = new_right;
                 }else{
-                    node.borrow_mut().left = Node::insert_node(left, val);
-                    node.borrow_mut().parent = node.borrow().key.clone();
+                    let new_left = Node::insert_node(right, val);
+                    if let Some(ref child) = new_left{
+                        child.borrow_mut().parent = Some(Rc::downgrade(&node)); 
+                    }
+                    node.borrow_mut().left = new_left;
+                    
                 }
                 Some(node)
             }
@@ -111,7 +118,7 @@ fn bst(arr: &mut [i32]){
         root = Node::insert_node(root, arr[index]);
         index += 1;
     }
-    // println!("{:#?}", root);
+    println!("{:#?}", root);
 
     
     // // Inorder Tree Walk
