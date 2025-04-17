@@ -1,5 +1,6 @@
 use std::cell::RefCell;
-use std::rc::{Rc, Weak};
+use std::ops::Deref;
+use std::rc::{self, Rc, Weak};
 
 type Link<Tree> = Option<Rc<RefCell<Node<Tree>>>>;
 
@@ -64,26 +65,31 @@ impl<T:Ord> Node<T> {
     }
     
     // To find the minimum value of the tree
-    fn minimum(root: Option<Rc<RefCell<Node<T>>>>){
-        match root {
-            Some(node) => {
-                if node.borrow().left.is_some(){
-                    Self::minimum(node.borrow().left.clone());
-                }
-                else{ println!("The minimum is {}", node.borrow().key) }
+    fn minimum(root: Option<Rc<RefCell<Node<T>>>>) -> i32{
+        if let Some(node)=root{
+            if node.borrow().left.is_some(){
+                return Self::minimum(node.borrow().left.clone());
+                
+            }else{
+                return node.borrow().key;
+                // println!("The minimum is {}", node.borrow().key);
             }
-            _=>{}
         }
+        else{
+            0
+        } 
     }
 
     // To find the maximum value of the tree
-    fn maximum(root: Option<Rc<RefCell<Node<T>>>>){
+    fn maximum(root: Option<Rc<RefCell<Node<T>>>>) -> i32{
         if let Some(node) = root{
             if node.borrow().right.is_some(){
-                Self::maximum(node.borrow().right.clone());
+                return Self::maximum(node.borrow().right.clone());
             }else{
-                println!("The maximum Node is: {}", node.borrow().key);
+                return node.borrow().key;
             }
+        }else{
+            0
         }
     }
 
@@ -107,45 +113,52 @@ impl<T:Ord> Node<T> {
         }
     }
 
-    // fn successor(root: Option<Box<Node>>, key: i32){
-    //     let succ = 0;                
+    // fn successor(key: i32) -> i32{
+    //     // case 1
+    //     if let Some(root) = key {
+            
+    //     }   
     // }
+
 }
 
-fn bst(arr: &mut [i32]){
+fn bst(arr: &mut [i32]) -> Option<Rc<RefCell<Node<i32>>>>{
     let mut root: Option<Rc<RefCell<Node<i32>>>> = None;
     let mut index = 0;
     while index < arr.len(){
         root = Node::insert_node(root, arr[index]);
         index += 1;
     }
-
-    // // To see the tree structure
-    // println!("{:#?}", root);
-
-    
-    // // Inorder Tree Walk
-    // print!("The in-order tree walk is: ", );
-    // Node::inorder(root);
-    // print!("\n");
-
-    // // Minimum Tree
-    // Node::minimum(root);
-
-    // // Maximum Tree
-    // Node::maximum(root);
-
-    // Node Searching
-    let destination = 2;
-    let searching = Node::search(root.clone(), destination);
-    println!("The position of {destination} is \n{:#?}", searching );
-
-    // // Successor
-    // Node::successor(root, 15);
-
+    root
 }
 
 fn main() {
     let mut array= [15, 6, 18, 3, 7, 17, 20, 2, 4, 13, 9];
-    bst(&mut array);
+    let result = bst(&mut array);
+    // println!("{:#?}", result);
+        
+    // Inorder Tree Walk
+    print!("The in-order tree walk is: ", );
+    Node::inorder(result.clone());
+    print!("\n");
+    print!("\n");
+
+    // Minimum Tree
+    let minim = Node::minimum(result.clone());
+    println!("The minimum node is : {minim}");
+    print!("\n");print!("\n");
+
+    // Maximum Tree
+    let max = Node::maximum(result.clone());
+    println!("The maximum node is : {max}");
+    print!("\n");print!("\n");
+
+    // Node Searching
+    let destination = 2;
+    let searching = Node::search(result.clone(), destination);
+    println!("The position of {destination} is \n{:#?}", searching );
+    print!("\n");print!("\n");
+
+    // // // Successor
+    // // Node::successor(root, 15);
 }
