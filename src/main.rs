@@ -8,11 +8,7 @@ struct Node<Tree>{
     key : i32,
     left: Link<Tree> ,
     right: Link<Tree>,
-    parent: Option<Rc<RefCell<Node<Tree>>>>
-}
-
-struct Parent {
-    value : Option<Rc<RefCell<Parent<i32>>>>
+    parent: Option<Weak<RefCell<Node<Tree>>>>
 }
 
 impl<T:Ord> Node<T> {
@@ -27,16 +23,14 @@ impl<T:Ord> Node<T> {
                 if val > key{
                     let new_right = Node::insert_node(right, val);
                     if let Some(ref child) = new_right{
-                        // child.borrow_mut().parent = Some(Rc::downgrade(&node));
-                        child.borrow_mut().parent = Some(Rc::new(RefCell::new(Parent{value: key})));
+                        child.borrow_mut().parent = Some(Rc::downgrade(&node));
+                        // child.borrow_mut().parent = Some(Rc::new(RefCell::new()));
                     }
                     node.borrow_mut().right = new_right;
                 }else{
                     let new_left = Node::insert_node(left, val);
                     if let Some(ref child) = new_left{
-                        // child.borrow_mut().parent = Some(Rc::downgrade(&node));
-                        child.borrow_mut().parent = Some(node);
-                        // di downgrade abis itu munculin node dibagian parentnya
+                        child.borrow_mut().parent = Some(Rc::downgrade(&node));
                     } 
                     node.borrow_mut().left = new_left;
                     
@@ -60,58 +54,58 @@ impl<T:Ord> Node<T> {
         }
     }
 
-    // // to make inorder tree walk
-    // fn inorder(root: Option<Rc<RefCell<Node<T>>>>){
-    //     if let Some(node ) = root {
-    //         Self::inorder(node.left);
-    //         print!("{} ", node.key);
-    //         Self::inorder(node.right);
-    //     }
-    // }
+    // to make inorder tree walk
+    fn inorder(root: Option<Rc<RefCell<Node<T>>>>){
+        if let Some(node ) = root {
+            Self::inorder(node.borrow().left.clone());
+            print!("{} ", node.borrow().key);
+            Self::inorder(node.borrow().right.clone());
+        }
+    }
     
-    // // To find the minimum value of the tree
-    // fn minimum(root: Option<Box<Node>>){
-    //     match root {
-    //         Some(node) => {
-    //             if node.left.is_some(){
-    //                 Self::minimum(node.left);
-    //             }
-    //             else{ println!("The minimum is {}", node.key) }
-    //         }
-    //         _=>{}
-    //     }
-    // }
+    // To find the minimum value of the tree
+    fn minimum(root: Option<Rc<RefCell<Node<T>>>>){
+        match root {
+            Some(node) => {
+                if node.borrow().left.is_some(){
+                    Self::minimum(node.borrow().left.clone());
+                }
+                else{ println!("The minimum is {}", node.borrow().key) }
+            }
+            _=>{}
+        }
+    }
 
-    // // To find the maximum value of the tree
-    // fn maximum(root: Option<Box<Node>>){
-    //     if let Some(node) = root{
-    //         if node.right.is_some(){
-    //             Self::maximum(node.right);
-    //         }else{
-    //             println!("The maximum Node is: {}", node.key);
-    //         }
-    //     }
-    // }
+    // To find the maximum value of the tree
+    fn maximum(root: Option<Rc<RefCell<Node<T>>>>){
+        if let Some(node) = root{
+            if node.borrow().right.is_some(){
+                Self::maximum(node.borrow().right.clone());
+            }else{
+                println!("The maximum Node is: {}", node.borrow().key);
+            }
+        }
+    }
 
-    // fn search(root: Option<&Box<Node>>, goal:i32) -> Option<&Box<Node>>{
-    //     match root {
-    //         Some(ref node) => {
-    //             let left = node.left.as_ref();
-    //             let right = node.right.as_ref();
-    //             if node.key == goal{
-    //                 return root;
-    //             }
-    //             if goal < node.key{
-    //                 return Self::search(left.clone(), goal);
-    //             }else{
-    //                 return Self::search(right.clone(), goal);
-    //             }
-    //         }
-    //         None => {
-    //             return None;
-    //         }
-    //     }
-    // }
+    fn search(root: Option<Rc<RefCell<Node<T>>>>, goal:i32) -> Option<Rc<RefCell<Node<T>>>>{
+        match root {
+            Some(ref node) => {
+                let left = node.borrow().left.clone();
+                let right = node.borrow().right.clone();
+                if node.borrow().key == goal{
+                    return root;
+                }
+                if goal < node.borrow().key{
+                    return Self::search(left, goal);
+                }else{
+                    return Self::search(right, goal);
+                }
+            }
+            None => {
+                return None;
+            }
+        }
+    }
 
     // fn successor(root: Option<Box<Node>>, key: i32){
     //     let succ = 0;                
@@ -125,7 +119,9 @@ fn bst(arr: &mut [i32]){
         root = Node::insert_node(root, arr[index]);
         index += 1;
     }
-    println!("{:#?}", root);
+
+    // // To see the tree structure
+    // println!("{:#?}", root);
 
     
     // // Inorder Tree Walk
@@ -140,9 +136,9 @@ fn bst(arr: &mut [i32]){
     // Node::maximum(root);
 
     // Node Searching
-    // let destination = 18;
-    // let searching = Node::search(root.as_ref(), destination);
-    // println!("The position of {destination} is \n{:#?}", searching );
+    let destination = 2;
+    let searching = Node::search(root.clone(), destination);
+    println!("The position of {destination} is \n{:#?}", searching );
 
     // // Successor
     // Node::successor(root, 15);
