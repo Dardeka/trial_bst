@@ -8,7 +8,11 @@ struct Node<Tree>{
     key : i32,
     left: Link<Tree> ,
     right: Link<Tree>,
-    parent: Option<Weak<RefCell<Node<Tree>>>>
+    parent: Option<Rc<RefCell<Node<Tree>>>>
+}
+
+struct Parent {
+    value : Option<Rc<RefCell<Parent<i32>>>>
 }
 
 impl<T:Ord> Node<T> {
@@ -23,14 +27,17 @@ impl<T:Ord> Node<T> {
                 if val > key{
                     let new_right = Node::insert_node(right, val);
                     if let Some(ref child) = new_right{
-                        child.borrow_mut().parent = Some(Rc::downgrade(&node));
+                        // child.borrow_mut().parent = Some(Rc::downgrade(&node));
+                        child.borrow_mut().parent = Some(Rc::new(RefCell::new(Parent{value: key})));
                     }
                     node.borrow_mut().right = new_right;
                 }else{
-                    let new_left = Node::insert_node(right, val);
+                    let new_left = Node::insert_node(left, val);
                     if let Some(ref child) = new_left{
-                        child.borrow_mut().parent = Some(Rc::downgrade(&node)); 
-                    }
+                        // child.borrow_mut().parent = Some(Rc::downgrade(&node));
+                        child.borrow_mut().parent = Some(node);
+                        // di downgrade abis itu munculin node dibagian parentnya
+                    } 
                     node.borrow_mut().left = new_left;
                     
                 }
