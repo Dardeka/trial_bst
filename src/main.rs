@@ -76,7 +76,7 @@ impl<T:Ord> Node<T> {
             }
         }
         else{
-            0
+            -1
         } 
     }
 
@@ -89,7 +89,7 @@ impl<T:Ord> Node<T> {
                 return node.borrow().key;
             }
         }else{
-            0
+            -1
         }
     }
 
@@ -113,12 +113,30 @@ impl<T:Ord> Node<T> {
         }
     }
 
-    // fn successor(key: i32) -> i32{
-    //     // case 1
-    //     if let Some(root) = key {
-            
-    //     }   
-    // }
+    fn successor(root: Option<Rc<RefCell<Node<T>>>>, key: i32) -> i32 {
+        let node = Node::search(root, key);
+        if node.is_none(){
+            return -1;
+        }
+        let node = node.unwrap();
+        if node.borrow().right.is_some(){
+            return Node::minimum(node.borrow().right.clone());
+        }else{
+            let mut prev_parent = node.borrow().parent.clone();
+            while let Some(weak_par) = prev_parent {
+                if let Some(parent) = weak_par.upgrade(){
+                    if parent.borrow().key > key{
+                        return parent.borrow().key;
+                    }
+                    node = parent.clone();
+                    prev_parent = node.borrow().parent.clone();
+                }else{
+                    break;
+                }
+            }
+        }
+        -1
+    }
 
 }
 
@@ -159,6 +177,13 @@ fn main() {
     println!("The position of {destination} is \n{:#?}", searching );
     print!("\n");print!("\n");
 
-    // // // Successor
-    // // Node::successor(root, 15);
+    // Successor
+    let goal = 13;
+    let succ = Node::successor(result.clone(), goal);
+    if succ == -1{
+        println!("There is no successor for the given node");
+    }else{
+        println!("The successor of {goal} is {succ}");
+    }
+
 }
